@@ -1225,8 +1225,8 @@ function shuffle() {
     // 横移動が縦移動より大きく、十分な距離移動した場合のみスワイプとみなす
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
       swiped = true;
-      if (dx < 0) go(1);   // 左へスワイプ → 次へ
-      else        go(-1);  // 右へスワイプ → 前へ
+      if (dx < 0) go(-1);  // 左へスワイプ → 前へ
+      else        go(1);   // 右へスワイプ → 次へ
     }
   });
   // スワイプ後のclickイベントを抑制（カードがめくれてしまうのを防ぐ）
