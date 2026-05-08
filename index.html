@@ -400,6 +400,25 @@
     border-radius: 12px;
     width: 100%;
   }
+  /* ── Touch-device hover fix ──
+     On iOS Safari and most touch browsers, :hover state STAYS on the element
+     you last tapped until you tap somewhere else. This caused previously-
+     selected quiz choices to look "highlighted" on the next question. The
+     fix: on devices that don't have a real hover capability, neutralize all
+     :hover background changes. Mouse-driven devices keep their hover feedback. */
+  @media (hover: none) {
+    .tab-row button:hover:not(.active) { background: #fff; }
+    .nav button:hover { background: #fff; }
+    .star-btn:hover { background: #fff; }
+    .star-item-del:hover { color: #888; }
+    .star-clear-btn:hover { background: #fff; color: #aaa; border-color: #ddd; }
+    .mode-row button:hover:not(.active) { background: #fff; }
+    .quiz-choice:hover:not(:disabled) { background: #fff; }
+    .typing-submit:hover { background: #185FA5; }
+    .typing-hint-btn:hover { background: #fff8e6; }
+    .result-buttons button:hover:not(.primary) { background: #fff; }
+    .result-buttons button.primary:hover { background: #185FA5; }
+  }
 </style>
 <script>
 (function(){
