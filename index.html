@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>漢字フラッシュカード</title>
+<title>漢字3モード学習アプリ</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -176,8 +176,230 @@
   .star-clear-btn:hover { background: #fff0f0; color: #e55; border-color: #e55; }
   /* ── Footer ── */
   .footer { margin-top: 1.5rem; font-size: 11px; color: #bbb; text-align: center; }
-  /* ── Footer ── */
-  .footer { margin-top: 1.5rem; font-size: 11px; color: #bbb; text-align: center; }
+
+  /* ── Mode row ── */
+  .mode-row {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 1rem;
+  }
+  .mode-row button {
+    flex: 1;
+    padding: 10px 4px;
+    font-size: 12px;
+    font-family: inherit;
+    background: #fff;
+    border: 0.5px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #444;
+    transition: background .15s, color .15s;
+  }
+  .mode-row button.active {
+    background: #185FA5;
+    color: #fff;
+    border-color: #185FA5;
+  }
+  .mode-row button:hover:not(.active) { background: #f0f0f0; }
+
+  /* ── Quiz / Typing common ── */
+  .qt-view { display: none; width: 100%; max-width: 480px; flex-direction: column; align-items: center; }
+  .qt-view.on { display: flex; }
+  .qt-card {
+    width: 100%;
+    background: #fff;
+    border: 0.5px solid #ddd;
+    border-radius: 14px;
+    padding: 2.4rem 1.5rem 2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .qt-kanji {
+    font-size: 56px;
+    font-weight: 500;
+    color: #1a1a1a;
+    line-height: 1.1;
+    margin-bottom: .8rem;
+    word-break: break-word;
+  }
+  .qt-prompt { font-size: 13px; color: #888; }
+
+  /* ── Quiz choices ── */
+  .quiz-choices { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+  .quiz-choice {
+    padding: 14px 16px;
+    font-size: 15px;
+    font-family: inherit;
+    background: #fff;
+    border: 0.5px solid #ccc;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #333;
+    text-align: left;
+    transition: background .12s;
+  }
+  .quiz-choice:hover:not(:disabled) { background: #f0f0f0; }
+  .quiz-choice:disabled { cursor: default; }
+  .quiz-choice .qc-num {
+    display: inline-block;
+    width: 22px;
+    color: #888;
+    font-weight: 500;
+  }
+  .quiz-choice.correct {
+    background: #e8f5e9;
+    border-color: #4caf50;
+    color: #2e7d32;
+    font-weight: 500;
+  }
+  .quiz-choice.wrong {
+    background: #fdecec;
+    border-color: #e55353;
+    color: #b53030;
+  }
+
+  /* ── Typing input ── */
+  .typing-input-wrap { width: 100%; }
+  .typing-input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 18px;
+    font-family: inherit;
+    border: 1.5px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    text-align: center;
+    box-sizing: border-box;
+    background: #fff;
+    color: #1a1a1a;
+    transition: border-color .15s;
+  }
+  .typing-input:focus { border-color: #185FA5; }
+  .typing-input.correct { border-color: #4caf50; background: #e8f5e9; }
+  .typing-input.wrong { border-color: #e55353; background: #fdecec; }
+  .typing-submit {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    background: #185FA5;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .typing-submit:hover { background: #134a82; }
+  .typing-feedback {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 14px;
+    min-height: 22px;
+  }
+  .typing-feedback.ok { color: #2e7d32; font-weight: 600; }
+  .typing-feedback.ng { color: #b53030; }
+  .typing-feedback .correct-answer {
+    display: block;
+    font-size: 22px;
+    font-weight: 600;
+    color: #2e7d32;
+    margin-top: 4px;
+  }
+  .typing-hint-btn {
+    margin-top: 12px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-family: inherit;
+    background: #fff8e6;
+    border: 0.5px solid #f5a623;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #c07800;
+  }
+  .typing-hint-btn:hover { background: #fff0cc; }
+  .typing-hint-box {
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: #fffbf0;
+    border: 0.5px solid #f5d77a;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #666;
+    text-align: center;
+    display: none;
+  }
+  .typing-hint-box.on { display: block; }
+  .typing-hint-box .ex-jp-h { color: #1a1a1a; font-size: 14px; margin-bottom: 2px; }
+  .typing-hint-box .ex-rm-h { color: #888; font-size: 12px; font-style: italic; margin-bottom: 2px; }
+  .typing-hint-box .ex-id-h { color: #888; font-size: 12px; }
+
+  /* ── Result ── */
+  .result-view {
+    width: 100%;
+    background: #fff;
+    border: 0.5px solid #ddd;
+    border-radius: 14px;
+    padding: 1.8rem 1.4rem;
+    text-align: center;
+  }
+  .result-title { font-size: 18px; font-weight: 600; color: #185FA5; margin-bottom: 1rem; }
+  .result-score { font-size: 32px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
+  .result-score .total { color: #999; font-weight: 400; }
+  .result-rate { font-size: 14px; color: #666; margin-bottom: 1.2rem; }
+  .result-wrong-title { font-size: 13px; color: #888; margin-bottom: 6px; text-align: left; }
+  .result-wrong-list {
+    text-align: left;
+    background: #fafafa;
+    border: 0.5px solid #eee;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 1.2rem;
+    max-height: 180px;
+    overflow-y: auto;
+  }
+  .result-wrong-item { font-size: 13px; color: #444; padding: 3px 0; }
+  .result-wrong-item .rk { font-weight: 500; color: #1a1a1a; margin-right: 6px; }
+  .result-wrong-item .rr { color: #888; }
+  .result-buttons { display: flex; flex-direction: column; gap: 8px; }
+  .result-buttons button {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    font-family: inherit;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 0.5px solid #ccc;
+    background: #fff;
+    color: #333;
+  }
+  .result-buttons button.primary {
+    background: #185FA5;
+    color: #fff;
+    border-color: #185FA5;
+    font-weight: 600;
+  }
+  .result-buttons button:hover:not(.primary) { background: #f0f0f0; }
+  .result-buttons button.primary:hover { background: #134a82; }
+
+  /* ── Quiz/Typing empty state ── */
+  .qt-empty {
+    text-align: center;
+    color: #aaa;
+    font-size: 14px;
+    padding: 2rem 1rem;
+    background: #fff;
+    border: 0.5px solid #eee;
+    border-radius: 12px;
+    width: 100%;
+  }
 </style>
 <script>
 (function(){
@@ -214,7 +436,13 @@
 </head>
 <body>
 
-<h1>漢字フラッシュカード</h1>
+<h1>漢字3モード学習アプリ</h1>
+
+<div class="mode-row">
+  <button id="modeFlash" class="active" onclick="setMode('flash')">📖 フラッシュカード</button>
+  <button id="modeQuiz" onclick="setMode('quiz')">✅ 4択クイズ</button>
+  <button id="modeTyping" onclick="setMode('typing')">⌨️ タイピング</button>
+</div>
 
 <div class="tab-row">
   <button id="tab1" class="active" onclick="setLesson(1)">第1回（1〜17）</button>
@@ -259,6 +487,54 @@
 <!-- Star list view -->
 <div class="star-view" id="starView" style="width:100%;max-width:480px;">
   <div id="starListContent"></div>
+</div>
+
+<!-- Quiz view (4択) -->
+<div class="qt-view" id="quizView">
+  <div id="quizPlay" style="width:100%;display:none;flex-direction:column;align-items:center;">
+    <div class="progress-wrap">
+      <span class="progress-text">問題 <strong id="qCur">1</strong> / <strong id="qTotal">-</strong></span>
+    </div>
+    <div class="pbar"><div class="pfill" id="qPbar" style="width:0%"></div></div>
+    <div class="group-label" id="qGrp"></div>
+
+    <div class="qt-card">
+      <div class="qt-kanji" id="qKanji">―</div>
+      <div class="qt-prompt">読み方は？</div>
+    </div>
+
+    <div class="quiz-choices" id="qChoices"></div>
+  </div>
+  <div id="quizEmpty" class="qt-empty" style="display:none;"></div>
+  <div id="quizResult" style="width:100%;display:none;"></div>
+</div>
+
+<!-- Typing view -->
+<div class="qt-view" id="typingView">
+  <div id="typingPlay" style="width:100%;display:none;flex-direction:column;align-items:center;">
+    <div class="progress-wrap">
+      <span class="progress-text">問題 <strong id="tCur">1</strong> / <strong id="tTotal">-</strong></span>
+    </div>
+    <div class="pbar"><div class="pfill" id="tPbar" style="width:0%"></div></div>
+    <div class="group-label" id="tGrp"></div>
+
+    <div class="qt-card">
+      <div class="qt-kanji" id="tKanji">―</div>
+      <div class="qt-prompt">読み方を入力（ひらがな or ローマ字）</div>
+    </div>
+
+    <div class="typing-input-wrap">
+      <input type="text" id="tInput" class="typing-input" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="例: にほん / nihon">
+      <button id="tSubmitBtn" class="typing-submit" onclick="typingSubmit()">答える</button>
+      <div class="typing-feedback" id="tFeedback"></div>
+      <div style="text-align:center;">
+        <button class="typing-hint-btn" id="tHintBtn" onclick="typingShowHint()">💡 ヒント：例文を見る</button>
+      </div>
+      <div class="typing-hint-box" id="tHintBox"></div>
+    </div>
+  </div>
+  <div id="typingEmpty" class="qt-empty" style="display:none;"></div>
+  <div id="typingResult" style="width:100%;display:none;"></div>
 </div>
 
 <div class="footer"></div>
@@ -1024,21 +1300,70 @@ function updateStarUI() {
   }
 }
 
+/* ── Mode & Lesson state ── */
+let currentMode = 'flash';      // 'flash' | 'quiz' | 'typing'
+let currentLesson = 1;          // 1..9 or 'star'
+
 /* ── Views ── */
-function showCardView() {
-  document.getElementById('cardView').style.display = '';
+function hideAllViews() {
+  document.getElementById('cardView').style.display = 'none';
   document.getElementById('starView').classList.remove('on');
+  document.getElementById('quizView').classList.remove('on');
+  document.getElementById('typingView').classList.remove('on');
+}
+function showCardView() {
+  hideAllViews();
+  document.getElementById('cardView').style.display = '';
   document.getElementById('tabStar').style.fontWeight = '';
 }
 function showStarList() {
-  document.getElementById('cardView').style.display = 'none';
-  document.getElementById('starView').classList.add('on');
-  document.getElementById('tabStar').style.fontWeight = '700';
-  renderStarList();
+  // Star tab behavior depends on current mode
+  if (currentMode === 'flash') {
+    hideAllViews();
+    document.getElementById('starView').classList.add('on');
+    document.getElementById('tabStar').style.fontWeight = '700';
+    setActiveTab('star');
+    renderStarList();
+  } else {
+    // For quiz/typing modes, ★一覧 means "use starred cards as the pool"
+    currentLesson = 'star';
+    setActiveTab('star');
+    if (currentMode === 'quiz') startQuiz();
+    else startTyping();
+  }
+}
+
+function setActiveTab(n) {
+  ['tab1','tab2','tab3','tab4','tab5','tab6','tab7','tab8','tab9'].forEach((id, i) => {
+    document.getElementById(id).classList.toggle('active', i+1 === n);
+  });
+  document.getElementById('tabStar').style.fontWeight = (n === 'star') ? '700' : '';
+}
+
+/* ── Mode switching ── */
+function setMode(m) {
+  currentMode = m;
+  document.getElementById('modeFlash').classList.toggle('active', m === 'flash');
+  document.getElementById('modeQuiz').classList.toggle('active', m === 'quiz');
+  document.getElementById('modeTyping').classList.toggle('active', m === 'typing');
+  // Re-apply current lesson under the new mode
+  if (currentLesson === 'star') {
+    showStarList();
+  } else {
+    setLesson(currentLesson);
+  }
+}
+
+/* ── Helper: get cards for a lesson selection ── */
+function poolForLesson(n) {
+  if (n === 'star') {
+    const starred = ALL.filter(c => isStarred(c));
+    return starred;
+  }
+  return n===1 ? L1 : n===2 ? L2 : n===3 ? L3 : n===4 ? L4 : n===5 ? L5 : n===6 ? L6 : n===7 ? L7 : n===8 ? L8 : ALL;
 }
 function renderStarList() {
-  const ALL_CARDS = [...L1,...L2,...L3,...L4,...L5,...L6,...L7,...L8];
-  const starred = ALL_CARDS.filter(c => isStarred(c));
+  const starred = ALL.filter(c => isStarred(c));
   const el = document.getElementById('starListContent');
   if (starred.length === 0) {
     el.innerHTML = '<div class="star-list-empty">まだ★をつけた漢字がありません。<br><br>カードをめくって「☆ 間違えやすい」ボタンで追加できます。</div>';
@@ -1075,12 +1400,16 @@ function clearAllStars() {
 let starredReviewMode = false;
 
 function reviewStarred() {
-  const ALL_CARDS = [...L1,...L2,...L3,...L4,...L5,...L6,...L7,...L8];
-  const starred = ALL_CARDS.filter(c => isStarred(c));
+  const starred = ALL.filter(c => isStarred(c));
   if (starred.length === 0) {
     alert('★をつけた漢字がありません。');
     return;
   }
+  // Force flashcard mode for review
+  currentMode = 'flash';
+  document.getElementById('modeFlash').classList.add('active');
+  document.getElementById('modeQuiz').classList.remove('active');
+  document.getElementById('modeTyping').classList.remove('active');
   starredReviewMode = true;
   pool = starred;
   order = pool.map((_,i) => i);
@@ -1096,16 +1425,20 @@ function reviewStarred() {
 
 function setLesson(n) {
   starredReviewMode = false;
-  pool = n===1 ? L1 : n===2 ? L2 : n===3 ? L3 : n===4 ? L4 : n===5 ? L5 : n===6 ? L6 : n===7 ? L7 : n===8 ? L8 : ALL;
-  order = pool.map((_,i) => i);
-  current = 0;
-  flipped = false;
-  ['tab1','tab2','tab3','tab4','tab5','tab6','tab7','tab8','tab9'].forEach((id, i) => {
-    document.getElementById(id).classList.toggle('active', i+1 === n);
-  });
-  document.getElementById('tabStar').style.fontWeight = '';
-  showCardView();
-  render();
+  currentLesson = n;
+  setActiveTab(n);
+  if (currentMode === 'flash') {
+    pool = poolForLesson(n);
+    order = pool.map((_,i) => i);
+    current = 0;
+    flipped = false;
+    showCardView();
+    render();
+  } else if (currentMode === 'quiz') {
+    startQuiz();
+  } else if (currentMode === 'typing') {
+    startTyping();
+  }
 }
 
 function buildBack(card) {
@@ -1237,6 +1570,660 @@ function shuffle() {
       swiped = false;
     }
   }, true);
+})();
+
+/* ================================================================
+   QUIZ & TYPING ENGINE
+================================================================ */
+
+/* ── Shared utilities ── */
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* Normalize user input: strip whitespace, lowercase letters */
+function normalizeInput(s) {
+  return s.toLowerCase().trim().replace(/\s+/g, '');
+}
+
+/* Generate possible romaji forms for the user's input, expanding macrons.
+   E.g. "ōkii" → ["oukii", "ookii"]. Returns at least the input itself (lowercased, a-z only). */
+function userInputRomajiVariants(s) {
+  const lower = s.toLowerCase().trim().replace(/\s+/g, '');
+  const expansions = [''];
+  for (const ch of lower) {
+    let opts;
+    if (ch === 'ō') opts = ['ou', 'oo'];
+    else if (ch === 'ū') opts = ['uu'];
+    else if (ch === 'ē') opts = ['ee', 'ei'];
+    else if (ch === 'ā') opts = ['aa'];
+    else if (ch === 'ī') opts = ['ii'];
+    else opts = [ch];
+    const next = [];
+    for (const e of expansions) for (const o of opts) next.push(e + o);
+    expansions.length = 0;
+    expansions.push(...next);
+  }
+  const out = new Set();
+  for (const e of expansions) {
+    const cleaned = e.replace(/[^a-z]/g, '');
+    if (cleaned) out.add(cleaned);
+  }
+  return [...out];
+}
+
+/* Convert romaji string to a comparable form (lowercase, only a-z).
+   Returns an array of variants because long vowels can be written multiple ways
+   (e.g. ō → either "ou" or "oo"). */
+function romajiVariants(rm) {
+  const lower = rm.toLowerCase();
+  // Split on slash (both / and ／) to handle entries like "Nihon / Nippon"
+  const parts = lower.split(/[\/／]/).map(s => s.trim()).filter(Boolean);
+  const out = new Set();
+  for (const part of parts) {
+    // Build all combinations of macron interpretations
+    const expansions = [''];
+    for (const ch of part) {
+      let opts;
+      if (ch === 'ō') opts = ['ou', 'oo'];
+      else if (ch === 'ū') opts = ['uu'];
+      else if (ch === 'ē') opts = ['ee', 'ei'];
+      else if (ch === 'ā') opts = ['aa'];
+      else if (ch === 'ī') opts = ['ii'];
+      else opts = [ch];
+      const next = [];
+      for (const e of expansions) {
+        for (const o of opts) next.push(e + o);
+      }
+      expansions.length = 0;
+      expansions.push(...next);
+    }
+    for (const exp of expansions) {
+      const cleaned = exp.replace(/[^a-z]/g, '');
+      if (cleaned) out.add(cleaned);
+    }
+  }
+  return [...out];
+}
+
+/* Get all hiragana/katakana variants from a reading (split on slashes) */
+function hiraganaVariants(jp) {
+  const parts = jp.split(/[\/／]/).map(s => s.trim()).filter(Boolean);
+  const out = [];
+  for (const p of parts) {
+    const cleaned = p.replace(/[^ぁ-んァ-ヶー]/g, '');
+    if (cleaned) out.push(cleaned);
+  }
+  return out;
+}
+
+/* Check if user input matches any reading of the card */
+function checkTypingAnswer(input, card) {
+  const norm = normalizeInput(input);
+  if (!norm) return false;
+
+  // Build set of all card-side comparison strings (hiragana + romaji variants)
+  const cardForms = new Set();
+  for (const r of card.R) {
+    for (const jpVar of hiraganaVariants(r.jp)) cardForms.add(jpVar);
+    for (const rmVar of romajiVariants(r.rm)) cardForms.add(rmVar);
+  }
+
+  // Direct hiragana check (norm is already lowercased + whitespace-stripped, hiragana untouched)
+  if (cardForms.has(norm)) return true;
+
+  // Romaji: try each macron-expansion variant of the user's input
+  for (const userVar of userInputRomajiVariants(input)) {
+    if (cardForms.has(userVar)) return true;
+  }
+
+  return false;
+}
+
+/* Build a "first reading" display (for results / wrong-answer feedback) */
+function primaryReading(card) {
+  return card.R.map(rv => rv.jp).join(' / ');
+}
+
+/* ================================================================
+   SMART DISTRACTOR GENERATION
+   Build choices that are PHONETICALLY CLOSE to the correct reading,
+   not random. Three sources, in priority order:
+     1. Other readings on the SAME card (for cards with multiple R[]).
+     2. Readings of cards SHARING A KANJI character with the target.
+     3. Phonetically-altered VARIANTS of the correct reading itself
+        (swap one consonant: じんこう → にんこう, しんこう, じんごう).
+     4. Readings of cards with similar PHONETIC features (length, last mora).
+     5. Random fallback (only if everything above is exhausted).
+================================================================ */
+
+/* Strip a reading down to bare hiragana for length/feature analysis */
+function readingHira(jp) {
+  const variants = hiraganaVariants(jp);
+  return variants.length > 0 ? variants[0] : '';
+}
+
+/* Generate phonetic variants of a reading by swapping one mora's consonant.
+   Used for plausible-but-wrong distractors. */
+function generatePhoneticVariants(reading) {
+  const out = new Set();
+  // Swap groups: each set contains hiragana that share the same vowel and are
+  // commonly confused (e.g. じ↔に, し↔ち↔ひ, etc.)
+  const swaps = [
+    // Vowel A row
+    ['か','が','さ','ざ','た','だ','な','は','ば','ぱ','ま','ら','わ'],
+    ['き','ぎ','し','じ','ち','ぢ','に','ひ','び','ぴ','み','り'],
+    ['く','ぐ','す','ず','つ','づ','ぬ','ふ','ぶ','ぷ','む','る'],
+    ['け','げ','せ','ぜ','て','で','ね','へ','べ','ぺ','め','れ'],
+    ['こ','ご','そ','ぞ','と','ど','の','ほ','ぼ','ぽ','も','ろ'],
+    // Yōon (ya/yu/yo small) - represented as starting with き/し/etc + ゃゅょ
+    // We handle these as 2-char swaps below
+  ];
+  // Yōon swap groups - pairs of leading kana for combined sounds (じょ↔しょ etc.)
+  // These are pairs of full-mora replacements
+  const yoonSwaps = [
+    ['きゃ','ぎゃ','しゃ','じゃ','ちゃ','にゃ','ひゃ','びゃ','ぴゃ','みゃ','りゃ'],
+    ['きゅ','ぎゅ','しゅ','じゅ','ちゅ','にゅ','ひゅ','びゅ','ぴゅ','みゅ','りゅ'],
+    ['きょ','ぎょ','しょ','じょ','ちょ','にょ','ひょ','びょ','ぴょ','みょ','りょ'],
+  ];
+
+  // Helper: split into morae (handle yōon as 2-char units)
+  function splitMorae(s) {
+    const morae = [];
+    let i = 0;
+    while (i < s.length) {
+      const ch = s[i];
+      const next = s[i+1];
+      if (next && /[ゃゅょャュョ]/.test(next)) {
+        morae.push(ch + next);
+        i += 2;
+      } else {
+        morae.push(ch);
+        i += 1;
+      }
+    }
+    return morae;
+  }
+
+  const morae = splitMorae(reading);
+  if (morae.length === 0) return [];
+
+  // For each mora position, try swapping with members of its consonant group
+  for (let pos = 0; pos < morae.length; pos++) {
+    const m = morae[pos];
+    // Find which group(s) this mora belongs to
+    let groups = [];
+    if (m.length === 2) {
+      // Yōon
+      for (const g of yoonSwaps) if (g.includes(m)) groups.push(g);
+    } else {
+      for (const g of swaps) if (g.includes(m)) groups.push(g);
+    }
+    for (const g of groups) {
+      for (const alt of g) {
+        if (alt === m) continue;
+        const newMorae = [...morae];
+        newMorae[pos] = alt;
+        const variant = newMorae.join('');
+        if (variant !== reading) out.add(variant);
+      }
+    }
+  }
+
+  // Also try swapping voiced/voiceless on the LAST mora's vowel pair
+  // (e.g. じんこう → じんごう by changing こ→ご at that position) — handled above.
+
+  return [...out];
+}
+
+/* Score how phonetically similar two readings are.
+   Higher = more similar = better distractor.
+   Considers: same length (+3), shares last mora (+2), shares first mora (+1),
+   shared morae count, similar consonants. */
+function phoneticDistance(a, b) {
+  if (!a || !b) return 0;
+  if (a === b) return -999;  // exclude exact matches
+  let score = 0;
+  if (a.length === b.length) score += 3;
+  else score -= Math.abs(a.length - b.length);
+  if (a[a.length - 1] === b[b.length - 1]) score += 2;
+  if (a[0] === b[0]) score += 1;
+  // Count shared characters (positional)
+  const minLen = Math.min(a.length, b.length);
+  for (let i = 0; i < minLen; i++) {
+    if (a[i] === b[i]) score += 1;
+  }
+  return score;
+}
+
+/* Get the kanji characters in a card's kanji field (filter out hiragana/katakana/misc) */
+function kanjiChars(s) {
+  // CJK Unified Ideographs range
+  return [...s].filter(ch => /[\u4e00-\u9fff]/.test(ch));
+}
+
+/* Build 3 distractors for a target card.
+   The strategy mixes: same-card alternates, kanji-sharing cards, phonetic
+   variants of the correct reading, and similar-sounding readings from elsewhere.
+   Randomness is woven through each strategy so repeated trials produce
+   different choices, while the result still feels phonetically close. */
+function buildDistractors(targetCard, allCardsPool, n) {
+  n = n || 3;
+  const correct = targetCard.R[0].jp;
+  const correctHira = readingHira(correct);
+  const used = new Set([correct]);
+  const distractors = [];
+
+  function tryAdd(reading) {
+    if (!reading || used.has(reading)) return false;
+    const normalized = reading.trim();
+    if (used.has(normalized)) return false;
+    used.add(reading);
+    used.add(normalized);
+    distractors.push(reading);
+    return distractors.length >= n;
+  }
+
+  /* Pick from a scored list with controlled randomness:
+     bucket items into score-tiers and shuffle within each tier so high-scoring
+     items still get priority, but the exact ordering varies between trials. */
+  function pickTopWithJitter(scoredItems, take) {
+    // scoredItems: [{reading, score}] already sorted desc by score
+    if (scoredItems.length === 0) return [];
+    // Group items by score
+    const buckets = new Map();
+    for (const it of scoredItems) {
+      if (!buckets.has(it.score)) buckets.set(it.score, []);
+      buckets.get(it.score).push(it);
+    }
+    // Walk buckets from highest score, shuffling within each
+    const result = [];
+    const sortedScores = [...buckets.keys()].sort((a, b) => b - a);
+    for (const sc of sortedScores) {
+      const bucket = shuffleArray(buckets.get(sc));
+      for (const item of bucket) {
+        result.push(item);
+        if (result.length >= take) return result;
+      }
+    }
+    return result;
+  }
+
+  // Strategy 1: Other readings on the SAME card (different R[] entries).
+  // These are perfect distractors — same kanji, different reading.
+  if (targetCard.R.length > 1) {
+    const altReadings = shuffleArray(targetCard.R.slice(1).map(rv => rv.jp));
+    for (const r of altReadings) {
+      if (tryAdd(r)) return distractors;
+    }
+  }
+
+  // Strategy 2: Phonetic variants of the correct reading (じんこう → しんこう, にんこう, etc.)
+  // These are great because they share the kanji's pronunciation pattern but
+  // swap one consonant — exactly like the user's example.
+  if (correctHira) {
+    const phoneticVars = shuffleArray(generatePhoneticVariants(correctHira));
+    // Filter: don't accidentally use a real reading that's on the target card itself
+    const targetReadings = new Set(targetCard.R.map(rv => readingHira(rv.jp)));
+    const goodVars = phoneticVars.filter(v => !targetReadings.has(v));
+    // Add up to 2 phonetic variants (leave room for kanji-sharing distractors)
+    let added = 0;
+    for (const v of goodVars) {
+      if (added >= 2) break;
+      if (tryAdd(v)) return distractors;
+      added++;
+    }
+  }
+
+  // Strategy 3: Readings from cards that share a kanji character
+  const targetKanjis = new Set(kanjiChars(targetCard.kanji));
+  if (targetKanjis.size > 0) {
+    const sharing = allCardsPool.filter(c => {
+      if (c.kanji === targetCard.kanji) return false;
+      return kanjiChars(c.kanji).some(k => targetKanjis.has(k));
+    });
+    const sharingScored = sharing.map(c => ({
+      reading: c.R[0].jp,
+      score: phoneticDistance(correctHira, readingHira(c.R[0].jp))
+    }));
+    sharingScored.sort((a, b) => b.score - a.score);
+    const picks = pickTopWithJitter(sharingScored, 8);
+    for (const item of picks) {
+      if (tryAdd(item.reading)) return distractors;
+    }
+  }
+
+  // Strategy 4: More phonetic variants if we still need more
+  if (correctHira && distractors.length < n) {
+    const phoneticVars = shuffleArray(generatePhoneticVariants(correctHira));
+    const targetReadings = new Set(targetCard.R.map(rv => readingHira(rv.jp)));
+    for (const v of phoneticVars) {
+      if (targetReadings.has(v)) continue;
+      if (tryAdd(v)) return distractors;
+    }
+  }
+
+  // Strategy 5: Phonetically-similar readings from elsewhere in the pool
+  const others = allCardsPool.filter(c => c.kanji !== targetCard.kanji);
+  const scored = others.map(c => ({
+    reading: c.R[0].jp,
+    score: phoneticDistance(correctHira, readingHira(c.R[0].jp))
+  }));
+  scored.sort((a, b) => b.score - a.score);
+  const topPicks = pickTopWithJitter(scored, 25);
+  for (const item of topPicks) {
+    if (tryAdd(item.reading)) return distractors;
+  }
+
+  // Strategy 6: Random fallback
+  const fallback = shuffleArray(ALL.filter(c => c.kanji !== targetCard.kanji));
+  for (const c of fallback) {
+    if (tryAdd(c.R[0].jp)) return distractors;
+  }
+
+  return distractors;
+}
+let quizQuestions = [];
+let quizPool = [];
+let quizIdx = 0;
+let quizCorrect = 0;
+let quizWrong = [];
+let quizLocked = false;
+
+function startQuiz(customQuestions) {
+  hideAllViews();
+  document.getElementById('quizView').classList.add('on');
+
+  let basePool;
+  if (customQuestions) {
+    basePool = customQuestions;
+  } else {
+    basePool = poolForLesson(currentLesson);
+  }
+
+  const playEl = document.getElementById('quizPlay');
+  const emptyEl = document.getElementById('quizEmpty');
+  const resultEl = document.getElementById('quizResult');
+  resultEl.style.display = 'none';
+
+  if (basePool.length < 1) {
+    playEl.style.display = 'none';
+    emptyEl.style.display = '';
+    emptyEl.innerHTML = (currentLesson === 'star')
+      ? '★をつけた漢字がまだありません。<br><br>フラッシュカードで「☆ 間違えやすい」をタップして追加してください。'
+      : 'この回には問題がありません。';
+    return;
+  }
+  emptyEl.style.display = 'none';
+  playEl.style.display = 'flex';
+
+  quizQuestions = shuffleArray(basePool);
+  quizPool = basePool.length >= 4 ? basePool : ALL;
+  quizIdx = 0;
+  quizCorrect = 0;
+  quizWrong = [];
+  quizLocked = false;
+  quizRender();
+}
+
+function quizRender() {
+  if (quizIdx >= quizQuestions.length) {
+    quizFinish();
+    return;
+  }
+  const card = quizQuestions[quizIdx];
+  document.getElementById('qCur').textContent = quizIdx + 1;
+  document.getElementById('qTotal').textContent = quizQuestions.length;
+  document.getElementById('qPbar').style.width = Math.round((quizIdx + 1) / quizQuestions.length * 100) + '%';
+  document.getElementById('qGrp').textContent = card.g;
+  document.getElementById('qKanji').textContent = card.kanji;
+
+  const correctReading = card.R[0].jp;
+  const distractors = buildDistractors(card, quizPool, 3);
+
+  const choices = shuffleArray([correctReading, ...distractors]);
+  const choicesEl = document.getElementById('qChoices');
+  choicesEl.innerHTML = '';
+  const numerals = ['①', '②', '③', '④'];
+  choices.forEach((choice, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-choice';
+    btn.dataset.value = choice;
+    btn.innerHTML = '<span class="qc-num">' + numerals[i] + '</span> ' + choice;
+    btn.onclick = () => quizAnswer(choice, btn, correctReading, card);
+    choicesEl.appendChild(btn);
+  });
+  quizLocked = false;
+}
+
+function quizAnswer(picked, btn, correctReading, card) {
+  if (quizLocked) return;
+  quizLocked = true;
+  const isCorrect = picked === correctReading;
+  const allBtns = document.querySelectorAll('#qChoices .quiz-choice');
+  allBtns.forEach(b => {
+    b.disabled = true;
+    if (b.dataset.value === correctReading) b.classList.add('correct');
+    else if (b === btn && !isCorrect) b.classList.add('wrong');
+  });
+  if (isCorrect) {
+    quizCorrect++;
+  } else {
+    quizWrong.push(card);
+    localStorage.setItem(starKey(card), '1');
+  }
+  setTimeout(() => {
+    quizIdx++;
+    quizRender();
+  }, isCorrect ? 800 : 1500);
+}
+
+function quizFinish() {
+  document.getElementById('quizPlay').style.display = 'none';
+  const resultEl = document.getElementById('quizResult');
+  resultEl.style.display = '';
+  const total = quizQuestions.length;
+  const rate = total === 0 ? 0 : Math.round(quizCorrect / total * 100);
+  let h = '<div class="result-view">';
+  h += '<div class="result-title">✅ 結果</div>';
+  h += '<div class="result-score">' + quizCorrect + ' <span class="total">/ ' + total + '</span></div>';
+  h += '<div class="result-rate">正答率：' + rate + '%</div>';
+  if (quizWrong.length > 0) {
+    h += '<div class="result-wrong-title">間違えた漢字（★がつきました）</div>';
+    h += '<div class="result-wrong-list">';
+    quizWrong.forEach(c => {
+      h += '<div class="result-wrong-item"><span class="rk">' + c.kanji + '</span><span class="rr">' + primaryReading(c) + '</span></div>';
+    });
+    h += '</div>';
+  } else {
+    h += '<div style="font-size:14px;color:#2e7d32;margin-bottom:1.2rem;">🎉 全問正解！すばらしい！</div>';
+  }
+  h += '<div class="result-buttons">';
+  h += '<button class="primary" onclick="quizRestart()">もう一度</button>';
+  if (quizWrong.length > 0) {
+    h += '<button onclick="quizRetryWrong()">間違いだけやり直す</button>';
+  }
+  h += '<button onclick="quizBackToMenu()">メニューに戻る</button>';
+  h += '</div>';
+  h += '</div>';
+  resultEl.innerHTML = h;
+}
+
+function quizRestart() { startQuiz(); }
+function quizRetryWrong() {
+  if (quizWrong.length === 0) return;
+  startQuiz([...quizWrong]);
+}
+function quizBackToMenu() { setMode('flash'); }
+
+/* ================================================================
+   TYPING STATE
+================================================================ */
+let typingQuestions = [];
+let typingIdx = 0;
+let typingCorrect = 0;
+let typingWrong = [];
+let typingState = 'input';
+let typingHintUsed = false;
+
+function startTyping(customQuestions) {
+  hideAllViews();
+  document.getElementById('typingView').classList.add('on');
+
+  let basePool;
+  if (customQuestions) {
+    basePool = customQuestions;
+  } else {
+    basePool = poolForLesson(currentLesson);
+  }
+
+  const playEl = document.getElementById('typingPlay');
+  const emptyEl = document.getElementById('typingEmpty');
+  const resultEl = document.getElementById('typingResult');
+  resultEl.style.display = 'none';
+
+  if (basePool.length < 1) {
+    playEl.style.display = 'none';
+    emptyEl.style.display = '';
+    emptyEl.innerHTML = (currentLesson === 'star')
+      ? '★をつけた漢字がまだありません。<br><br>フラッシュカードで「☆ 間違えやすい」をタップして追加してください。'
+      : 'この回には問題がありません。';
+    return;
+  }
+  emptyEl.style.display = 'none';
+  playEl.style.display = 'flex';
+
+  typingQuestions = shuffleArray(basePool);
+  typingIdx = 0;
+  typingCorrect = 0;
+  typingWrong = [];
+  typingRender();
+}
+
+function typingRender() {
+  if (typingIdx >= typingQuestions.length) {
+    typingFinish();
+    return;
+  }
+  const card = typingQuestions[typingIdx];
+  document.getElementById('tCur').textContent = typingIdx + 1;
+  document.getElementById('tTotal').textContent = typingQuestions.length;
+  document.getElementById('tPbar').style.width = Math.round((typingIdx + 1) / typingQuestions.length * 100) + '%';
+  document.getElementById('tGrp').textContent = card.g;
+  document.getElementById('tKanji').textContent = card.kanji;
+
+  const inp = document.getElementById('tInput');
+  inp.value = '';
+  inp.className = 'typing-input';
+  inp.disabled = false;
+  document.getElementById('tFeedback').textContent = '';
+  document.getElementById('tFeedback').className = 'typing-feedback';
+  document.getElementById('tSubmitBtn').textContent = '答える';
+  document.getElementById('tHintBox').classList.remove('on');
+  document.getElementById('tHintBtn').style.display = '';
+  typingHintUsed = false;
+  typingState = 'input';
+  setTimeout(() => inp.focus(), 30);
+}
+
+function typingSubmit() {
+  if (typingState === 'shown') {
+    typingIdx++;
+    typingRender();
+    return;
+  }
+  const card = typingQuestions[typingIdx];
+  const inp = document.getElementById('tInput');
+  const fb = document.getElementById('tFeedback');
+  const isCorrect = checkTypingAnswer(inp.value, card);
+  inp.disabled = true;
+  if (isCorrect) {
+    typingCorrect++;
+    inp.classList.add('correct');
+    fb.className = 'typing-feedback ok';
+    fb.innerHTML = '✅ 正解！ <span style="color:#888;font-weight:400;font-size:13px;">（Enterで次へ）</span>';
+  } else {
+    typingWrong.push(card);
+    localStorage.setItem(starKey(card), '1');
+    inp.classList.add('wrong');
+    fb.className = 'typing-feedback ng';
+    const allReadings = card.R.map(rv => rv.jp).join(' / ');
+    fb.innerHTML = '❌ 正解はこちら：<span class="correct-answer">' + allReadings + '</span><span style="color:#888;font-size:13px;">（Enterで次へ）</span>';
+  }
+  document.getElementById('tSubmitBtn').textContent = '次へ →';
+  typingState = 'shown';
+  setTimeout(() => document.getElementById('tSubmitBtn').focus(), 30);
+}
+
+function typingShowHint() {
+  const card = typingQuestions[typingIdx];
+  const ex = card.E[0];
+  const box = document.getElementById('tHintBox');
+  let h = '';
+  if (ex.tag) h += '<div style="font-size:11px;color:#aaa;margin-bottom:3px;">例：' + ex.tag + '</div>';
+  h += '<div class="ex-jp-h">' + ex.jp + '</div>';
+  h += '<div class="ex-rm-h">' + ex.rm + '</div>';
+  h += '<div class="ex-id-h">' + ex.id + '</div>';
+  box.innerHTML = h;
+  box.classList.add('on');
+  typingHintUsed = true;
+  document.getElementById('tHintBtn').style.display = 'none';
+}
+
+function typingFinish() {
+  document.getElementById('typingPlay').style.display = 'none';
+  const resultEl = document.getElementById('typingResult');
+  resultEl.style.display = '';
+  const total = typingQuestions.length;
+  const rate = total === 0 ? 0 : Math.round(typingCorrect / total * 100);
+  let h = '<div class="result-view">';
+  h += '<div class="result-title">⌨️ 結果</div>';
+  h += '<div class="result-score">' + typingCorrect + ' <span class="total">/ ' + total + '</span></div>';
+  h += '<div class="result-rate">正答率：' + rate + '%</div>';
+  if (typingWrong.length > 0) {
+    h += '<div class="result-wrong-title">間違えた漢字（★がつきました）</div>';
+    h += '<div class="result-wrong-list">';
+    typingWrong.forEach(c => {
+      h += '<div class="result-wrong-item"><span class="rk">' + c.kanji + '</span><span class="rr">' + primaryReading(c) + '</span></div>';
+    });
+    h += '</div>';
+  } else {
+    h += '<div style="font-size:14px;color:#2e7d32;margin-bottom:1.2rem;">🎉 全問正解！すばらしい！</div>';
+  }
+  h += '<div class="result-buttons">';
+  h += '<button class="primary" onclick="typingRestart()">もう一度</button>';
+  if (typingWrong.length > 0) {
+    h += '<button onclick="typingRetryWrong()">間違いだけやり直す</button>';
+  }
+  h += '<button onclick="typingBackToMenu()">メニューに戻る</button>';
+  h += '</div>';
+  h += '</div>';
+  resultEl.innerHTML = h;
+}
+
+function typingRestart() { startTyping(); }
+function typingRetryWrong() {
+  if (typingWrong.length === 0) return;
+  startTyping([...typingWrong]);
+}
+function typingBackToMenu() { setMode('flash'); }
+
+/* Enter key handler for typing input */
+(function(){
+  const inp = document.getElementById('tInput');
+  if (inp) {
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        typingSubmit();
+      }
+    });
+  }
 })();
 
 render();
